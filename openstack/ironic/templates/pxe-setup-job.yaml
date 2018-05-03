@@ -15,7 +15,7 @@ spec:
         runAsUser: 0
       containers:
       - name: ironic-pxe-setup
-        image: {{.Values.global.image_repository}}/{{.Values.global.image_namespace}}/ubuntu-source-ironic-pxe:{{.Values.image_version_ironic_pxe | default .Values.image_version | required "Please set ironic.image_version or similar"}}
+        image: {{.Values.global.imageRepository}}/{{.Values.global.image_namespace}}/ubuntu-source-ironic-pxe:{{.Values.imageVersionIronicPXE | default .Values.imageVersion | required "Please set ironic.imageVersion or similar"}}
         imagePullPolicy: IfNotPresent
         command:
         - bash
@@ -36,7 +36,7 @@ spec:
             cp /usr/lib/syslinux/modules/*/ldlinux.* .
           fi
 
-          {{- range $v, $url := .Values.tftp_files }}
+          {{- range $v, $url := .Values.tftpFiles }}
           curl -sRz {{ $v }} -o {{ $v }} {{ $url }}
           {{- end }}
 

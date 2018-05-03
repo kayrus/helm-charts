@@ -9,13 +9,13 @@ rpc_response_timeout = {{ .Values.rpc_response_timeout | default .Values.global.
 rpc_workers = {{ .Values.rpc_workers | default .Values.global.rpc_workers | default 1 }}
 
 [agent]
-deploy_logs_collect = {{ .Values.agent.deploy_logs.collect }}
-deploy_logs_storage_backend = {{ .Values.agent.deploy_logs.storage_backend }}
-deploy_logs_swift_days_to_expire = {{ .Values.agent.deploy_logs.swift_days_to_expire }}
-{{- if eq .Values.agent.deploy_logs.storage_backend "swift" }}
-deploy_logs_swift_project_name = {{ .Values.agent.deploy_logs.swift_project_name | required "Need a project name" }}
-deploy_logs_swift_project_domain_name = {{ .Values.agent.deploy_logs.swift_project_domain_name | required "Need a domain name for the project" }}
-deploy_logs_swift_container = {{ .Values.agent.deploy_logs.swift_container | default "ironic_deploy_logs_container" }}
+deployLogs_collect = {{ .Values.agent.deployLogs.collect }}
+deployLogs_storageBackend = {{ .Values.agent.deployLogs.storageBackend }}
+deployLogs_imageRepository = {{ .Values.agent.deployLogs.imageRepository }}
+{{- if eq .Values.agent.deployLogs.storageBackend "swift" }}
+deployLogs_imageRepository = {{ .Values.agent.deployLogs.imageRepository | required "Need a project name" }}
+deployLogs_swiftProjectDomainName = {{ .Values.agent.deployLogs.swiftProjectDomainName | required "Need a domain name for the project" }}
+deployLogs_swift_container = {{ .Values.agent.deployLogs.swift_container | default "ironic_deployLogs_container" }}
 {{- end }}
 
 [inspector]
@@ -47,39 +47,39 @@ insecure = True
 auth_type = v3password
 auth_url = {{.Values.global.keystone_api_endpoint_protocol_admin | default "http" }}://{{include "keystone_api_endpoint_host_admin" .}}:{{ .Values.global.keystone_api_port_admin | default 35357}}/v3
 user_domain_name = {{.Values.global.keystone_service_domain | default "Default"}}
-username = {{ .Values.global.ironic_service_user }}{{ .Values.global.user_suffix }}
-password = {{ .Values.global.ironic_service_password | default (tuple . .Values.global.ironic_service_user | include "identity.password_for_user")  | replace "$" "$$" }}
+username = {{ .Values.global.ironicServiceUser }}{{ .Values.global.user_suffix }}
+password = {{ .Values.global.ironicServicePassword | default (tuple . .Values.global.ironicServiceUser | include "identity.password_for_user")  | replace "$" "$$" }}
 project_domain_name = {{.Values.global.keystone_service_domain | default "Default"}}
 project_name = {{.Values.global.keystone_service_project | default "service"}}
 
 [glance]
 auth_section = service_catalog
-glance_api_servers = {{.Values.global.glance_api_endpoint_protocol_internal | default "http"}}://{{include "glance_api_endpoint_host_internal" .}}:{{.Values.global.glance_api_port_internal | default 9292}}
+glance_api_servers = {{.Values.global.glance_api_endpoint_protocol_internal | default "http"}}://{{include "glance_api_endpoint_host_internal" .}}:{{.Values.global.glance_api_portInternal | default 9292}}
 swift_temp_url_duration=1200
 # No terminal slash, it will break the url signing scheme
 swift_endpoint_url={{.Values.global.swift_endpoint_protocol | default "http"}}://{{include "swift_endpoint_host" .}}:{{ .Values.global.swift_api_port_public | default 443}}
 swift_api_version=v1
-{{- if .Values.swift_store_multi_tenant }}
-swift_store_multi_tenant = True
+{{- if .Values.swiftStoreMultiTenant }}
+swiftStoreMultiTenant = True
 {{- else}}
-    {{- if .Values.swift_multi_tenant }}
+    {{- if .Values.swiftMultiTenant }}
 swift_store_multiple_containers_seed=32
     {{- end }}
-swift_temp_url_key={{ .Values.swift_tempurl }}
-swift_account={{ .Values.swift_account }}
+swift_temp_url_key={{ .Values.swiftTempurl }}
+swiftAccount={{ .Values.swiftAccount }}
 {{- end }}
 
 [swift]
 auth_section = service_catalog
-{{- if .Values.swift_set_temp_url_key }}
-swift_set_temp_url_key = True
+{{- if .Values.swiftSetTempUrlKey }}
+swiftSetTempUrlKey = True
 {{- end }}
 
 [neutron]
 auth_section = service_catalog
-url = {{.Values.global.neutron_api_endpoint_protocol_internal | default "http"}}://{{include "neutron_api_endpoint_host_internal" .}}:{{ .Values.global.neutron_api_port_internal | default 9696}}
-cleaning_network_uuid = {{ .Values.network_cleaning_uuid }}
-provisioning_network_uuid = {{ .Values.network_management_uuid }}
+url = {{.Values.global.neutron_api_endpoint_protocol_internal | default "http"}}://{{include "neutron_api_endpoint_host_internal" .}}:{{ .Values.global.neutron_api_portInternal | default 9696}}
+cleaning_network_uuid = {{ .Values.networkCleaninguuid }}
+provisioning_network_uuid = {{ .Values.networkManagementuuid }}
 
 {{include "oslo_messaging_rabbit" .}}
 

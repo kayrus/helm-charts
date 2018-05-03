@@ -13,6 +13,6 @@ data:
     CREATE ROLE {{.Values.global.dbUser}}{{.Values.global.user_suffix}} WITH ENCRYPTED PASSWORD '{{.Values.global.dbPassword}}' LOGIN;
     GRANT ALL PRIVILEGES ON DATABASE {{.Values.postgresql.postgresDatabase}} TO {{.Values.global.dbUser}};
 
-    CREATE DATABASE {{.Values.global.inspector_db_name}};
-    CREATE ROLE {{.Values.global.inspector_db_user}} WITH ENCRYPTED PASSWORD '{{.Values.global.inspector_db_password}}' LOGIN;
-    GRANT ALL PRIVILEGES ON DATABASE {{.Values.global.inspector_db_name}} TO {{.Values.global.inspector_db_user}};
+    CREATE DATABASE {{.Values.global.inspectordbName}};
+    CREATE ROLE {{.Values.global.inspectordbUser}} WITH ENCRYPTED PASSWORD '{{.Values.global.inspectordbPassword}}' LOGIN;
+    GRANT ALL PRIVILEGES ON DATABASE {{.Values.global.inspectordbName}} TO {{.Values.global.inspectordbUser}};

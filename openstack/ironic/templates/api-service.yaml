@@ -12,5 +12,5 @@ spec:
     name: ironic-api
   ports:
     - name: ironic-api
-      port: {{.Values.global.ironic_api_port_internal}}
+      port: {{.Values.global.ironicApiPortInternal}}
       targetPort: ironic-api

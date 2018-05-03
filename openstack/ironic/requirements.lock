@@ -8,8 +8,11 @@ dependencies:
 - name: pgmetrics
   repository: file://../../common/pgmetrics
   version: 0.1.0
+- name: memcached
+  repository: file://../../common/memcached
+  version: 0.0.1
 - name: rabbitmq
   repository: file://../../common/rabbitmq
   version: 0.1.0
-digest: sha256:425f8011bc71bb5766d2fa2fbc6209b319dabfb8c04e34496dad0ab74727d6c3
-generated: 2018-04-26T16:26:19.317484+05:30
+digest: sha256:d253c6650dc34c4745248abc19b655a10625e36854896cdef550a4a9fbd566bb
+generated: 2018-05-03T14:02:42.952166+05:30

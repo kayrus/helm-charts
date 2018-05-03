@@ -1,7 +1,7 @@
 [DEFAULT]
 log-config-append = /etc/ironic/logging.ini
 
-enabled_drivers = {{.Values.enabled_drivers | default "pxe_ipmitool,agent_ipmitool"}}
+enabledDrivers = {{.Values.enabledDrivers | default "pxe_ipmitool,agent_ipmitool"}}
 enabled_network_interfaces = noop,flat,neutron
 default_network_interface = neutron
 
@@ -9,8 +9,8 @@ default_network_interface = neutron
 os_region = {{.Values.global.region}}
 auth_url = {{.Values.global.keystone_api_endpoint_protocol_admin | default "http"}}://{{include "keystone_api_endpoint_host_admin" .}}:{{ .Values.global.keystone_api_port_admin | default 35357}}/v3
 auth_type = v3password
-username = {{ .Values.global.ironic_service_user }}{{ .Values.global.user_suffix }}
-password = {{ .Values.global.ironic_service_password | default (tuple . .Values.global.ironic_service_user | include "identity.password_for_user")  | replace "$" "$$" }}
+username = {{ .Values.global.ironicServiceUser }}{{ .Values.global.user_suffix }}
+password = {{ .Values.global.ironicServicePassword | default (tuple . .Values.global.ironicServiceUser | include "identity.password_for_user")  | replace "$" "$$" }}
 user_domain_name = {{.Values.global.keystone_service_domain | default "Default"}}
 project_name = {{.Values.global.keystone_service_project | default "service"}}
 project_domain_name = {{.Values.global.keystone_service_domain | default "Default"}}
@@ -36,15 +36,15 @@ processing_hooks = $default_processing_hooks,local_link_connection
 enroll_node_driver = agent_ipmitool
 
 [database]
-connection = {{ tuple . "ironic_inspector" "ironic_inspector" .Values.inspector_db_password | include "db_url" }}
+connection = {{ tuple . "ironicInspector" "ironicInspector" .Values.inspectordbPassword | include "db_url" }}
 {{- include "ini_sections.database_options" . }}
 
 [keystone_authtoken]
-auth_uri = {{.Values.global.keystone_api_endpoint_protocol_internal | default "http"}}://{{include "keystone_api_endpoint_host_internal" .}}:{{ .Values.global.keystone_api_port_internal | default 5000}}
+auth_uri = {{.Values.global.keystone_api_endpoint_protocol_internal | default "http"}}://{{include "keystone_api_endpoint_host_internal" .}}:{{ .Values.global.keystone_api_portInternal | default 5000}}
 auth_url = {{.Values.global.keystone_api_endpoint_protocol_admin| default "http"}}://{{include "keystone_api_endpoint_host_admin" .}}:{{ .Values.global.keystone_api_port_admin  | default 35357}}/v3
 auth_type = v3password
-username = {{ .Values.global.ironic_service_user }}{{ .Values.global.user_suffix }}
-password = {{ .Values.global.ironic_service_password | default (tuple . .Values.global.ironic_service_user | include "identity.password_for_user") }}
+username = {{ .Values.global.ironicServiceUser }}{{ .Values.global.user_suffix }}
+password = {{ .Values.global.ironicServicePassword | default (tuple . .Values.global.ironicServiceUser | include "identity.password_for_user") }}
 user_domain_name = {{.Values.global.keystone_service_domain | default "Default"}}
 project_name = {{.Values.global.keystone_service_project | default "service"}}
 project_domain_name = {{.Values.global.keystone_service_domain | default "Default"}}

@@ -9,13 +9,13 @@ metadata:
     component: ironic
 spec:
   replicas: {{ .Values.pod.replicas.api }}
-  revisionHistoryLimit: {{ .Values.pod.lifecycle.upgrades.deployments.revision_history }}
+  revisionHistoryLimit: {{ .Values.pod.lifecycle.upgrades.deployments.revisionHistory }}
   strategy:
-    type: {{ .Values.pod.lifecycle.upgrades.deployments.pod_replacement_strategy }}
-    {{ if eq .Values.pod.lifecycle.upgrades.deployments.pod_replacement_strategy "RollingUpdate" }}
+    type: {{ .Values.pod.lifecycle.upgrades.deployments.podReplacementStrategy }}
+    {{ if eq .Values.pod.lifecycle.upgrades.deployments.podReplacementStrategy "RollingUpdate" }}
     rollingUpdate:
-      maxUnavailable: {{ .Values.pod.lifecycle.upgrades.deployments.rolling_update.max_unavailable }}
-      maxSurge: {{ .Values.pod.lifecycle.upgrades.deployments.rolling_update.max_surge }}
+      maxUnavailable: {{ .Values.pod.lifecycle.upgrades.deployments.rollingUpdate.maxUnavailable }}
+      maxSurge: {{ .Values.pod.lifecycle.upgrades.deployments.rollingUpdate.maxSurge }}
     {{ end }}
   selector:
     matchLabels:
@@ -35,7 +35,7 @@ spec:
 { tuple . "ironic" "inspector" | include "kubernetes_pod_anti_affinity" | indent 6 }}
       containers:
         - name: ironic-api
-          image: {{.Values.global.image_repository}}/{{.Values.global.image_namespace}}/ubuntu-source-ironic-api:{{.Values.image_version_ironic_api | default .Values.image_version | required "Please set ironic.image_version or similar"}}
+          image: {{.Values.global.imageRepository}}/{{.Values.global.image_namespace}}/ubuntu-source-ironic-api:{{.Values.imageVersionIronicApi | default .Values.imageVersion | required "Please set ironic.imageVersion or similar"}}
           imagePullPolicy: IfNotPresent
           command:
             - kubernetes-entrypoint
@@ -58,12 +58,12 @@ spec:
           livenessProbe:
             httpGet:
               path: /
-              port: {{.Values.global.ironic_api_port_internal}}
+              port: {{.Values.global.ironicApiPortInternal}}
             initialDelaySeconds: 15
             timeoutSeconds: 5
           ports:
             - name: ironic-api{{- tuple .Values.api.override | include "utils.snippets.debug.debuggable_port" }}
-              containerPort: {{.Values.global.ironic_api_port_internal}}
+              containerPort: {{.Values.global.ironicApiPortInternal}}
           volumeMounts:
             - mountPath: /etc/ironic
               name: etcironic
@@ -95,4 +95,4 @@ spec:
           configMap:
             name: ironic-etc
             defaultMode: 0444
-{{- tuple . .Values.api.override "ironic-api" .Values.global.ironic_api_port_internal | include "utils.snippets.debug.debug_port_volumes_and_configmap" }}
+{{- tuple . .Values.api.override "ironic-api" .Values.global.ironicApiPortInternal | include "utils.snippets.debug.debug_port_volumes_and_configmap" }}

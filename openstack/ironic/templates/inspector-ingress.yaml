@@ -22,4 +22,4 @@ spec:
         - path: /
           backend:
             serviceName: ironic-inspector
-            servicePort: {{.Values.inspector.port_internal}}
+            servicePort: {{.Values.inspector.portInternal}}

@@ -9,13 +9,13 @@ metadata:
     component: ironic
 spec:
   replicas: {{ .Values.pod.replicas.pxe }}
-  revisionHistoryLimit: {{ .Values.pod.lifecycle.upgrades.deployments.revision_history }}
+  revisionHistoryLimit: {{ .Values.pod.lifecycle.upgrades.deployments.revisionHistory }}
   strategy:
-    type: {{ .Values.pod.lifecycle.upgrades.deployments.pod_replacement_strategy }}
-    {{ if eq .Values.pod.lifecycle.upgrades.deployments.pod_replacement_strategy "RollingUpdate" }}
+    type: {{ .Values.pod.lifecycle.upgrades.deployments.podReplacementStrategy }}
+    {{ if eq .Values.pod.lifecycle.upgrades.deployments.podReplacementStrategy "RollingUpdate" }}
     rollingUpdate:
-      maxUnavailable: {{ .Values.pod.lifecycle.upgrades.deployments.rolling_update.max_unavailable }}
-      maxSurge: {{ .Values.pod.lifecycle.upgrades.deployments.rolling_update.max_surge }}
+      maxUnavailable: {{ .Values.pod.lifecycle.upgrades.deployments.rollingUpdate.maxUnavailable }}
+      maxSurge: {{ .Values.pod.lifecycle.upgrades.deployments.rollingUpdate.maxSurge }}
     {{ end }}
   selector:
     matchLabels:
@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
         - name: ironic-tftp
-          image: {{.Values.global.image_repository}}/{{.Values.global.image_namespace}}/ubuntu-source-ironic-pxe:{{.Values.image_version_ironic_pxe | default .Values.image_version | required "Please set ironic.image_version or similar"}}
+          image: {{.Values.global.imageRepository}}/{{.Values.global.image_namespace}}/ubuntu-source-ironic-pxe:{{.Values.imageVersionIronicPXE | default .Values.imageVersion | required "Please set ironic.imageVersion or similar"}}
           imagePullPolicy: IfNotPresent
           command: ["ptftpd", "-v", "-d", "/tftpmap.py:handle", "eth0", "/tftpboot"]
           ports:
@@ -41,7 +41,7 @@ spec:
             - mountPath: /tftpboot
               name: ironic-tftp
         - name: ironic-ipxe
-          image: {{.Values.image_version_nginx | default "nginx:stable-alpine"}}
+          image: {{.Values.imageVersion_nginx | default "nginx:stable-alpine"}}
           imagePullPolicy: IfNotPresent
           ports:
             - name: ironic-ipxe

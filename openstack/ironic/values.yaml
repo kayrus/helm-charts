@@ -5,19 +5,19 @@
 #
 global:
   imageNamespace: monsoon
-  image_repository: REQUIRED
-  ironic_api_port_internal: '6385'
-  ironic_tftp_ip: null
-  ironic_tftp_port_public: '69'
+  imageRepository: REQUIRED
+  ironicApiPortInternal: '6385'
+  ironicTftpIP: null
+  ironicTftpPortPublic: '69'
   osprofiler: {}
-  inspector_db_name: ironic_inspector
-  inspector_db_user: ironic_inspector
-  inspector_db_password: null
+  inspectordbName: ironic_inspector
+  inspectordbUser: ironic_inspector
   dbname: ironic
   dbUser: ironic
-  dbpassword: null
-  fernet_router:
-    image_version: 'latest'
+  pgbouncer:
+    enabled: true
+  fernetRouter:
+    imageVersion: 'latest'
 
 osprofiler:
     enabled: false
@@ -30,18 +30,18 @@ pod:
   lifecycle:
     upgrades:
       deployments:
-        revision_history: 5
-        pod_replacement_strategy: RollingUpdate
-        rolling_update:
-           max_unavailable: 0
-           max_surge: 1
+        revisionHistory: 5
+        podReplacementStrategy: RollingUpdate
+        rollingUpdate:
+           maxUnavailable: 0
+           maxSurge: 1
 
-image_version: null
-image_version_ironic_api: null
-image_version_ironic_conductor: null
-image_version_ironic_inspector: null
-image_version_ironic_pxe: null
-swift_multi_tenant: True
+imageVersion: null
+imageVersionIronicApi: null
+imageVersionIronicConductor: null
+imageVersionIronicInspector: null
+imageVersionIronicPXE: null
+swiftMultiTenant: True
 
 debug: "True"
 
@@ -49,10 +49,10 @@ api:
   override: {}
 
 inspector:
-  port_internal: '5050'
+  portInternal: '5050'
   dhcp:
     port: '67'
-    proxy_port: '4011'
+    proxyPort: '4011'
     ip: null
     range: null
     options:
@@ -65,24 +65,24 @@ conductor:
     port: 8088
 
 agent:
-  deploy_logs:
+  deployLogs:
     collect: "on_failure"
-    storage_backend: "local"
-    swift_days_to_expire: 30
+    storageBackend: "local"
+    imageRepository: 30
 
 console:
   secret: null
 
-tftp_ip: null
-tftp_files:
+tftpIP: null
+tftpFiles:
   undionly.kpxe: http://boot.ipxe.org/undionly.kpxe
 
-port_metrics: '9102'
+portMetrics: '9102'
 
-network_management_uuid: DEFINE_IN_REGION_CHART
-network_cleaning_uuid: DEFINE_IN_REGION_CHART
-swift_account: null
-swift_tempurl: null
+networkManagementuuid: DEFINE_IN_REGION_CHART
+networkCleaninguuid: DEFINE_IN_REGION_CHART
+swiftAccount: null
+swiftTempurl: null
 
 pgmetrics:
   name: ironic
@@ -94,9 +94,7 @@ postgresql:
   dbMaintain: ironic-db-maintain
   users:
     ironic: {}
-    ironic_inspector: {}
-  pgbouncer:
-    enabled: true
+    ironicInspector: {}
   persistence:
     enabled: true
     existingClaim: db-ironic-pvclaim
@@ -104,7 +102,7 @@ postgresql:
     enabled: true
     metrics: true
     imageTag: v0.5.12
-    os_password: null
+    osPassword: null
 
 vice_president: true
 

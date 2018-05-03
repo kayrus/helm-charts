@@ -20,17 +20,16 @@ spec:
   - name: ironic
     type: baremetal
     description: Openstack baremetal provisioning service
- # uncomment once moved to helm-charts
- #    endpoints:
- #    - interface: admin
- #      region: {{ .Values.global.region }}
- #      url: https://{{ include "ironic_api_endpoint_host_public" .}}
- #    - interface: internal
- #      region: {{ .Values.global.region }}
- #      url: http://ironic-api.{{ .Release.Namespace }}.svc.kubernetes.{{ .Values.global.region }}.{{ .Values.global.tld }}:6385
- #    - interface: public
- #      region: {{ .Values.global.region }}
- #      url: http://ironic-api.{{ .Release.Namespace }}.svc.kubernetes.{{ .Values.global.region }}.{{ .Values.global.tld }}:6385
+     endpoints:
+     - interface: admin
+       region: {{ .Values.global.region }}
+       url: https://{{ include "ironic_api_endpoint_host_public" .}}
+     - interface: internal
+       region: {{ .Values.global.region }}
+       url: http://ironic-api.{{ .Release.Namespace }}.svc.kubernetes.{{ .Values.global.region }}.{{ .Values.global.tld }}:6385
+     - interface: public
+       region: {{ .Values.global.region }}
+       url: http://ironic-api.{{ .Release.Namespace }}.svc.kubernetes.{{ .Values.global.region }}.{{ .Values.global.tld }}:6385
 
   flavors:
     - name: "zh0hpe1.large"
@@ -127,9 +126,9 @@ spec:
   domains:
   - name: Default
     users:
-    - name: {{ .Values.global.ironic_service_user }}{{ .Values.global.user_suffix }}
+    - name: {{ .Values.global.ironicServiceUser }}{{ .Values.global.user_suffix }}
       description: Ironic Service
-      password: {{ .Values.global.ironic_service_password | default (tuple . .Values.global.ironic_service_user | include "identity.password_for_user") | quote }}
+      password: {{ .Values.global.ironicServicePassword | default (tuple . .Values.global.ironicServiceUser | include "identity.password_for_user") | quote }}
       roles:
       - project: service
         role: service

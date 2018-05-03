@@ -10,5 +10,5 @@ metadata:
 data:
   db-maintain.sql: |
     ALTER ROLE {{.Values.global.dbUser}} WITH ENCRYPTED PASSWORD '{{.Values.global.dbPassword}}';
-    ALTER ROLE {{.Values.global.inspector_db_user}} WITH ENCRYPTED PASSWORD '{{.Values.global.inspector_db_password}}';
+    ALTER ROLE {{.Values.global.inspectordbUser}} WITH ENCRYPTED PASSWORD '{{.Values.global.inspectordbPassword}}';
     ALTER ROLE {{.Values.postgresql.postgresUser}} WITH ENCRYPTED PASSWORD '{{.Values.postgresql.postgresPassword}}';

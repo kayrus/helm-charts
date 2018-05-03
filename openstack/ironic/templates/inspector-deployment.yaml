@@ -9,13 +9,13 @@ metadata:
     component: none
 spec:
   replicas: {{ .Values.pod.replicas.inspector }}
-  revisionHistoryLimit: {{ .Values.pod.lifecycle.upgrades.deployments.revision_history }}
+  revisionHistoryLimit: {{ .Values.pod.lifecycle.upgrades.deployments.revisionHistory }}
   strategy:
-    type: {{ .Values.pod.lifecycle.upgrades.deployments.pod_replacement_strategy }}
-    {{ if eq .Values.pod.lifecycle.upgrades.deployments.pod_replacement_strategy "RollingUpdate" }}
+    type: {{ .Values.pod.lifecycle.upgrades.deployments.podReplacementStrategy }}
+    {{ if eq .Values.pod.lifecycle.upgrades.deployments.podReplacementStrategy "RollingUpdate" }}
     rollingUpdate:
-      maxUnavailable: {{ .Values.pod.lifecycle.upgrades.deployments.rolling_update.max_unavailable }}
-      maxSurge: {{ .Values.pod.lifecycle.upgrades.deployments.rolling_update.max_surge }}
+      maxUnavailable: {{ .Values.pod.lifecycle.upgrades.deployments.rollingUpdate.maxUnavailable }}
+      maxSurge: {{ .Values.pod.lifecycle.upgrades.deployments.rollingUpdate.maxSurge }}
     {{ end }}
   selector:
     matchLabels:
@@ -36,7 +36,7 @@ spec:
 { tuple . "ironic" "inspector" | include "kubernetes_pod_anti_affinity" | indent 6 }}
       containers:
         - name: ironic-inspector
-          image: {{.Values.global.image_repository}}/{{.Values.global.image_namespace}}/ubuntu-source-ironic-inspector:{{.Values.image_version_ironic_inspector | default .Values.image_version | required "Please set ironic.image_version or similar"}}
+          image: {{.Values.global.imageRepository}}/{{.Values.global.image_namespace}}/ubuntu-source-ironic-inspector:{{.Values.imageVersionIronicInspector | default .Values.imageVersion | required "Please set ironic.imageVersion or similar"}}
           imagePullPolicy: IfNotPresent
           command:
             - kubernetes-entrypoint
@@ -73,9 +73,9 @@ spec:
               name: ironic-etc
               subPath: logging.ini
               readOnly: true
-{{- if and .Values.global.ironic_tftp_ip .Values.inspector.dhcp.range .Values.inspector.dhcp.options.router }}
+{{- if and .Values.global.ironicTftpIP .Values.inspector.dhcp.range .Values.inspector.dhcp.options.router }}
         - name: dhcp
-          image: {{.Values.global.image_repository}}/{{.Values.global.image_namespace}}/ubuntu-source-staticdhcpd:{{.Values.image_version_staticdhcpd | default .Values.image_version | required "Please set ironic.image_version or similar"}}
+          image: {{.Values.global.imageRepository}}/{{.Values.global.image_namespace}}/ubuntu-source-staticdhcpd:{{.Values.imageVersion_staticdhcpd | default .Values.imageVersion | required "Please set ironic.imageVersion or similar"}}
           imagePullPolicy: IfNotPresent
           command:
             - staticDHCPd
@@ -90,7 +90,7 @@ spec:
               containerPort: {{.Values.inspector.dhcp.port}}
             - name: dhcp-proxy
               protocol: UDP
-              containerPort: {{.Values.inspector.dhcp.proxy_port}}
+              containerPort: {{.Values.inspector.dhcp.proxyPort}}
           volumeMounts:
             - mountPath: /conf
               name: dhcp-config
@@ -106,7 +106,7 @@ spec:
           configMap:
             name: ironic-inspector-etc
             defaultMode: 0444
-{{- if and .Values.global.ironic_tftp_ip .Values.inspector.dhcp.range .Values.inspector.dhcp.options.router }}
+{{- if and .Values.global.ironicTftpIP .Values.inspector.dhcp.range .Values.inspector.dhcp.options.router }}
         - name: dhcp-config
           configMap:
             name: ironic-inspector-dhcp

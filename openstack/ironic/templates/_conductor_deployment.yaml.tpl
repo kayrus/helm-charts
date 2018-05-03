@@ -11,13 +11,13 @@ metadata:
     component: ironic
 spec:
   replicas: 1
-  revisionHistoryLimit: {{ .Values.pod.lifecycle.upgrades.deployments.revision_history }}
+  revisionHistoryLimit: {{ .Values.pod.lifecycle.upgrades.deployments.revisionHistory }}
   strategy:
-    type: {{ .Values.pod.lifecycle.upgrades.deployments.pod_replacement_strategy }}
-    {{ if eq .Values.pod.lifecycle.upgrades.deployments.pod_replacement_strategy "RollingUpdate" }}
+    type: {{ .Values.pod.lifecycle.upgrades.deployments.podReplacementStrategy }}
+    {{ if eq .Values.pod.lifecycle.upgrades.deployments.podReplacementStrategy "RollingUpdate" }}
     rollingUpdate:
-      maxUnavailable: {{ .Values.pod.lifecycle.upgrades.deployments.rolling_update.max_unavailable }}
-      maxSurge: {{ .Values.pod.lifecycle.upgrades.deployments.rolling_update.max_surge }}
+      maxUnavailable: {{ .Values.pod.lifecycle.upgrades.deployments.rollingUpdate.maxUnavailable }}
+      maxSurge: {{ .Values.pod.lifecycle.upgrades.deployments.rollingUpdate.maxSurge }}
     {{ end }}
   selector:
     matchLabels:
@@ -35,7 +35,7 @@ spec:
       hostname: ironic-conductor-{{$conductor.name}}
       containers:
         - name: ironic-conductor
-          image: {{.Values.global.image_repository}}/{{.Values.global.image_namespace}}/ubuntu-source-ironic-conductor:{{.Values.image_version_ironic_conductor | default .Values.image_version | required "Please set ironic.image_version or similar"}}
+          image: {{.Values.global.imageRepository}}/{{.Values.global.image_namespace}}/ubuntu-source-ironic-conductor:{{.Values.imageVersionIronicConductor | default .Values.imageVersion | required "Please set ironic.imageVersion or similar"}}
           imagePullPolicy: IfNotPresent
         {{- if $conductor.debug }}
           securityContext:
@@ -117,7 +117,7 @@ spec:
               name: development
         {{- end }}
         - name: console
-          image: {{.Values.image_version_nginx | default "nginx:stable-alpine"}}
+          image: {{.Values.imageVersion_nginx | default "nginx:stable-alpine"}}
           imagePullPolicy: IfNotPresent
           ports:
             - name: ironic-console

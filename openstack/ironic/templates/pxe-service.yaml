@@ -14,14 +14,14 @@ spec:
   ports:
     - name: ironic-tftp
       protocol: UDP
-      port: {{.Values.global.ironic_tftp_port_public}}
+      port: {{.Values.global.ironicTftpPortPublic}}
       targetPort: ironic-tftp
     - name: ironic-ipxe
       protocol: TCP
       port: {{.Values.conductor.deploy.port}}
       targetPort: ironic-ipxe
-  {{- if .Values.global.ironic_tftp_ip }}
+  {{- if .Values.global.ironicTftpIP }}
   externalIPs:
-    - {{.Values.global.ironic_tftp_ip}}
+    - {{.Values.global.ironicTftpIP}}
   {{- end }}
   sessionAffinity: "ClientIP"
