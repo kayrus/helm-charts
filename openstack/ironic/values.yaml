@@ -104,7 +104,20 @@ postgresql:
     imageTag: v0.5.12
     osPassword: null
 
+sentry:
+  enabled: true
 vice_president: true
+
+rabbitmq:
+  users:
+    default:
+      password: null
+    admin:
+      password: null
+  persistence:
+    enabled: false
+  metrics:
+    password: null
 
 logging:
     formatters:
