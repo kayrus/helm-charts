@@ -3,7 +3,7 @@ kind: Job
 metadata:
   name: glance-migration-job
   labels:
-    app: {{ template "fullname" . }}
+    app: {{ template "name" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
@@ -12,7 +12,7 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ template "fullname" . }}
+        app: {{ template "name" . }}
       annotations:
         chart-version: {{.Chart.Version}}
         checksum/etc-configmap.conf: {{ include (print $.Template.BasePath "/etc-configmap.yaml") . | sha256sum }}
@@ -21,8 +21,8 @@ spec:
       restartPolicy: OnFailure
       containers:
         - name: glance-migration
-          image: {{ default "hub.global.cloud.sap" .Values.global.imageRegistry }}/{{ .Values.api.image }}:{{ .Values.api.imageTag }}
-          imagePullPolicy: {{ .Values.api.imagePullPolicy | default "IfNotPresent" | quote }}
+          image: {{.Values.global.imageRegistry}}/{{.Values.global.imageNamespace}}/ubuntu-source-glance-api:{{.Values.image_version}}
+          imagePullPolicy: IfNotPresent
           command:
             - /usr/local/bin/kubernetes-entrypoint
           env:
@@ -37,6 +37,7 @@ spec:
               name: glance-etc
             - mountPath: /container.init
               name: glance-bin
+              defaultMode: 0755
       volumes:
         - name: glance-etc
           configMap:

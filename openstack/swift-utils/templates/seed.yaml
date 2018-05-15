@@ -14,7 +14,6 @@ spec:
   requires:
     - swift/swift-seed #  and all its dependencies
     - monsoon3/domain-default-seed
-    - monsoon3/domain-bn-seed
     - monsoon3/domain-bs-seed
     - monsoon3/domain-ccadmin-seed
     - monsoon3/domain-hcp03-seed
@@ -38,8 +37,6 @@ spec:
           - domain: Default
             role: admin
           - domain: ccadmin
-            role: admin
-          - domain: bn
             role: admin
           - domain: bs
             role: admin
@@ -70,7 +67,7 @@ spec:
         - name: swift_dispersion
           description: 'dispersion of objects and containers'
           roles:
-            - user: swift_dispersion
+            - user: swift_dispersion@Default
               role: swiftoperator
           swift:
             enabled: true
@@ -87,7 +84,7 @@ spec:
                   read: .r:*,.rlistings
                   meta-web-listings: 'true'
       groups:
-        - name: Administrators
+        - name: CC3TEST_DOMAIN_ADMINS
           roles:
             - project: swift_test
               role: admin

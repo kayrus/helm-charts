@@ -4,7 +4,7 @@ apiVersion: extensions/v1beta1
 metadata:
   name: glance
   labels:
-    app: {{ template "fullname" . }}
+    app: {{ template "name" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
@@ -22,11 +22,11 @@ spec:
     {{ end }}
   selector:
     matchLabels:
-      app: {{ template "fullname" . }}
+      app: {{ template "name" . }}
   template:
     metadata:
       labels:
-        app: {{ template "fullname" . }}
+        app: {{ template "name" . }}
         name: glance
       annotations:
         chart-version: {{.Chart.Version}}
@@ -35,12 +35,20 @@ spec:
     spec:
       containers:
         - name: api
-          image: "{{ default "hub.global.cloud.sap" .Values.global.imageRegistry }}/{{ .Values.api.image }}:{{ .Values.api.imageTag }}"
-          imagePullPolicy: {{ .Values.api.imagePullPolicy | default "IfNotPresent" | quote }}
+          securityContext:
+            runAsUser: 0
+          image: {{.Values.global.imageRegistry}}/{{.Values.global.imageNamespace}}/ubuntu-source-glance-api:{{.Values.image_version}}
+          imagePullPolicy: IfNotPresent
           livenessProbe:
             httpGet:
               path: /healthcheck
-              port: 9292
+              port: {{.Values.api_port_internal}}
+            initialDelaySeconds: 15
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /healthcheck
+              port: {{.Values.api_port_internal}}
             initialDelaySeconds: 15
             timeoutSeconds: 5
           command:
@@ -58,7 +66,10 @@ spec:
               value: "false"
             {{- if .Values.sentry.enabled }}
             - name: SENTRY_DSN
-              value: {{ .Values.sentry.dsn | quote}}
+              valueFrom:
+                secretKeyRef:
+                  name: sentry
+                  key: glance.DSN.python
             {{- end }}
             {{- if .Values.metrics.enabled }}
             - name: STATSD_HOST
@@ -79,7 +90,7 @@ spec:
           {{- end }}
           ports:
             - name: api
-              containerPort: 9292
+              containerPort: {{.Values.api_port_internal}}
           volumeMounts:
             - mountPath: /glance-etc
               name: glance-etc
@@ -88,8 +99,8 @@ spec:
             - mountPath: /scripts
               name: glance-bin
         - name: registry
-          image: "{{ default "hub.global.cloud.sap" .Values.global.imageRegistry }}/{{ .Values.registry.image }}:{{ .Values.registry.imageTag }}"
-          imagePullPolicy: {{ .Values.registry.imagePullPolicy | default "IfNotPresent" | quote }}
+          image: {{.Values.global.imageRegistry}}/{{.Values.global.imageNamespace}}/ubuntu-source-glance-registry:{{.Values.image_version}}
+          imagePullPolicy: IfNotPresent
           command:
             - /usr/local/bin/kubernetes-entrypoint
           livenessProbe:
@@ -107,7 +118,10 @@ spec:
               value: "false"
             {{- if .Values.sentry.enabled }}
             - name: SENTRY_DSN
-              value: {{ .Values.sentry.dsn | quote}}
+              valueFrom:
+                secretKeyRef:
+                  name: sentry
+                  key: glance.DSN.python
             {{- end }}
           {{- if .Values.registry.resources.enabled }}
           resources:
@@ -128,7 +142,7 @@ spec:
               name: glance-bin
         {{- if .Values.metrics.enabled }}
         - name: statsd
-          image: "{{ .Values.metrics.image }}:{{ .Values.metrics.imageTag }}"
+          image: prom/statsd-exporter:v0.5.0
           imagePullPolicy: {{ .Values.metrics.imagePullPolicy | default "IfNotPresent" | quote }}
           ports:
             - name: statsd
@@ -139,9 +153,9 @@ spec:
         {{- end }}
       volumes:
         - name: image-store
-        {{- if .Values.store.file.persistence.enabled }}
+        {{- if .Values.file.persistence.enabled }}
           persistentVolumeClaim:
-            claimName: {{ if .Values.store.file.persistence.existingClaim }}{{ .Values.store.file.persistence.existingClaim }}{{- else }}{{ .Release.Name }}-pvc{{- end }}
+            claimName: {{ if .Values.file.persistence.existingClaim }}{{ .Values.file.persistence.existingClaim }}{{- else }}{{ .Release.Name }}-pvc{{- end }}
         {{- else }}
           emptyDir: {}
         {{- end }}
@@ -151,3 +165,4 @@ spec:
         - name: glance-bin
           configMap:
             name: glance-bin
+            defaultMode: 0755
