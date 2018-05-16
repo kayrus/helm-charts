@@ -31,7 +31,7 @@ pod:
     upgrades:
       deployments:
         revisionHistory: 5
-        podReplacementStrategy: RollingUpdate
+        podReplacaementStrategy: RollingUpdate
         rollingUpdate:
            maxUnavailable: 0
            maxSurge: 1

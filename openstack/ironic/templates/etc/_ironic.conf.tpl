@@ -78,8 +78,8 @@ swiftSetTempUrlKey = True
 [neutron]
 auth_section = service_catalog
 url = {{.Values.global.neutron_api_endpoint_protocol_internal | default "http"}}://{{include "neutron_api_endpoint_host_internal" .}}:{{ .Values.global.neutron_api_portInternal | default 9696}}
-cleaning_network_uuid = {{ .Values.networkCleaninguuid }}
-provisioning_network_uuid = {{ .Values.networkManagementuuid }}
+cleaning_network_uuid = {{ .Values.network_cleaning_uuid }}
+provisioning_network_uuid = {{ .Values.network_management_uuid }}
 
 {{include "oslo_messaging_rabbit" .}}
 

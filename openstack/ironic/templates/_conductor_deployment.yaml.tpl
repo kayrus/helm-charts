@@ -35,7 +35,7 @@ spec:
       hostname: ironic-conductor-{{$conductor.name}}
       containers:
         - name: ironic-conductor
-          image: {{.Values.global.imageRepository}}/{{.Values.global.image_namespace}}/ubuntu-source-ironic-conductor:{{.Values.imageVersionIronicConductor | default .Values.imageVersion | required "Please set ironic.imageVersion or similar"}}
+          image: {{.Values.global.imageRepository}}/{{.Values.global.imageNamespace}}/ubuntu-source-ironic-conductor:{{.Values.imageVersionIronicConductor | default .Values.imageVersion | required "Please set ironic.imageVersion or similar"}}
           imagePullPolicy: IfNotPresent
         {{- if $conductor.debug }}
           securityContext:
@@ -62,6 +62,10 @@ spec:
                   name: sentry
                   key: {{ .Chart.Name }}.DSN.python
 {{- end }}
+            - name: PGAPPNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
         {{- if not $conductor.debug }}
           livenessProbe:
             exec:

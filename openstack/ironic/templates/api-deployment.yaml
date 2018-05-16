@@ -32,10 +32,12 @@ spec:
             {{ tuple . "ironic" "api" | include "kubernetes_pod_anti_affinity" }}
 {{- end }}
     spec:
-{ tuple . "ironic" "inspector" | include "kubernetes_pod_anti_affinity" | indent 6 }}
+{{- if and (eq .Capabilities.KubeVersion.Major "1") (ge .Capabilities.KubeVersion.Minor "7") }}
+{{ tuple . "ironic" "api" | include "kubernetes_pod_anti_affinity" | indent 6 }}
+{{- end }}
       containers:
         - name: ironic-api
-          image: {{.Values.global.imageRepository}}/{{.Values.global.image_namespace}}/ubuntu-source-ironic-api:{{.Values.imageVersionIronicApi | default .Values.imageVersion | required "Please set ironic.imageVersion or similar"}}
+          image: {{.Values.global.imageRepository}}/{{.Values.global.imageNamespace}}/ubuntu-source-ironic-api:{{.Values.imageVersionIronicApi | default .Values.imageVersion }}
           imagePullPolicy: IfNotPresent
           command:
             - kubernetes-entrypoint
@@ -55,6 +57,10 @@ spec:
                   name: sentry
                   key: {{ .Chart.Name }}.DSN.python
 {{- end }}
+            - name: PGAPPNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
           livenessProbe:
             httpGet:
               path: /

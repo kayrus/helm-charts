@@ -1,3 +1,4 @@
+{{- if and .Values.global.ironic_tftp_ip .Values.inspector.dhcp.range .Values.inspector.dhcp.options.router }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -95,3 +96,4 @@ data:
 
     def handleUnknownMAC(packet, method, mac, client_ip, relay_ip, port):
        return _dynamic_pool.handle(method, packet, mac, client_ip)
+{{- end }}
