@@ -16,6 +16,9 @@ spec:
     metadata:
       labels:
         name: neutron-agents
+        system: openstack
+        type: backend
+        component: neutron
     spec:
       hostNetwork: true
       hostPID: true
