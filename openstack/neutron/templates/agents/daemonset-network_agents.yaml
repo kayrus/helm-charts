@@ -1,44 +1,35 @@
-{{- define "network_agent" -}}
-{{- $context := index . 0 -}}
-{{- $agent := index . 1 -}}
-kind: Deployment
+---
+kind: DaemonSet
 apiVersion: extensions/v1beta1
 metadata:
-  name: neutron-agents-{{$agent.name}}
+  name: neutron-agents
   labels:
     system: openstack
     type: backend
     component: neutron
 spec:
-  replicas: 1
-  revisionHistoryLimit: 5
-  strategy:
-    type: Recreate
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
   template:
-
     metadata:
       labels:
-        name: neutron-agents-{{$agent.name}}
-      {{- if le $context.Capabilities.KubeVersion.Minor "6" }}
-      annotations:
-        scheduler.alpha.kubernetes.io/tolerations: '[{"key":"species","value":"network"}]'
-      {{- end }}
+        name: neutron-agents
     spec:
       hostNetwork: true
       hostPID: true
       hostIPC: true
       nodeSelector:
-        kubernetes.io/hostname: {{$agent.node}}
-      {{- if ge $context.Capabilities.KubeVersion.Minor "7" }}
+        species: network
       tolerations:
-      - key: "species"
-        operator: "Equal"
-        value: "network"
-        effect: "NoSchedule"
-      {{- end }}
+        - key: "species"
+          operator: "Equal"
+          value: "network"
+          effect: "NoSchedule"
       containers:
         - name: neutron-dhcp-agent
-          image: {{ default "hub.global.cloud.sap" $context.Values.global.imageRegistry }}/{{$context.Values.image_name}}:{{$context.Values.agent_image_tag}}
+          image: {{.Values.global.imageRegistry}}/{{.Values.image_name}}:{{.Values.agent_image_tag}}
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: true
@@ -54,6 +45,14 @@ spec:
                   key: neutron.DSN.python
             - name: DEBUG_CONTAINER
               value: "false"
+          readinessProbe:
+            exec:
+              command:
+              - sh
+              - -c
+              - neutron-dhcp-agent-ready > /dev/null 2>&1
+            initialDelaySeconds: 5
+            timeoutSeconds: 10
           volumeMounts:
             - mountPath: /var/run
               name: run
@@ -62,7 +61,7 @@ spec:
             - mountPath: /container.init
               name: container-init
         - name: neutron-metadata-agent
-          image: {{ default "hub.global.cloud.sap" $context.Values.global.imageRegistry }}/{{$context.Values.image_name}}:{{$context.Values.agent_image_tag}}
+          image: {{.Values.global.imageRegistry}}/{{.Values.image_name}}:{{.Values.agent_image_tag}}
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: true
@@ -84,7 +83,7 @@ spec:
             - mountPath: /container.init
               name: container-init
         - name: neutron-l3-agent
-          image: {{ default "hub.global.cloud.sap" $context.Values.global.imageRegistry }}/{{$context.Values.image_name}}:{{$context.Values.agent_image_tag}}
+          image: {{.Values.global.imageRegistry}}/{{.Values.image_name}}:{{.Values.agent_image_tag}}
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: true
@@ -109,7 +108,7 @@ spec:
             - mountPath: /container.init
               name: container-init
         - name: neutron-ovs-agent
-          image: {{ default "hub.global.cloud.sap" $context.Values.global.imageRegistry }}/{{$context.Values.image_name}}:{{$context.Values.agent_image_tag}}
+          image: {{.Values.global.imageRegistry}}/{{.Values.image_name}}:{{.Values.agent_image_tag}}
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: true
@@ -135,7 +134,7 @@ spec:
               name: container-init
 
         - name: ovs
-          image: {{ default "hub.global.cloud.sap" $context.Values.global.imageRegistry }}/{{$context.Values.image_name}}:{{$context.Values.agent_image_tag}}
+          image: {{.Values.global.imageRegistry}}/{{.Values.image_name}}:{{.Values.agent_image_tag}}
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: true
@@ -160,7 +159,7 @@ spec:
             - mountPath: /container.init
               name: container-init
         - name: ovs-db
-          image: {{ default "hub.global.cloud.sap" $context.Values.global.imageRegistry }}/{{$context.Values.image_name}}:{{$context.Values.agent_image_tag}}
+          image: {{.Values.global.imageRegistry}}/{{.Values.image_name}}:{{.Values.agent_image_tag}}
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: true
@@ -188,4 +187,3 @@ spec:
         - name: container-init
           configMap:
             name: neutron-bin
-{{- end -}}
